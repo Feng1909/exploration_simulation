@@ -137,5 +137,6 @@
       <param name="odomTran_child_frame_id" value="sensor2" />
     </node>
   </group>
+  <node pkg="tf" type="static_transform_publisher" name="mapTransPublisher" args="0.0 0 0 0 0 0 /map1 /map2 1000"/>
 
 </launch>

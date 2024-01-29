@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <cstring>
 
 #include <message_filters/subscriber.h>
 #include <message_filters/sync_policies/approximate_time.h>
@@ -53,6 +54,11 @@ double voxelTimeUpdateThre = 2.0;
 double minRelZ = -1.5;
 double maxRelZ = 0.2;
 double disRatioZ = 0.2;
+
+string odom_topic = "/state_estimation1";
+string lidar_scan_pub = "/registered_scan1";
+string terrain_map_topic = "/terrain_map1";
+string terrain_frame_id = "/map1";
 
 // terrain voxel parameters
 float terrainVoxelSize = 1.0;
@@ -222,12 +228,16 @@ int main(int argc, char **argv) {
   nhPrivate.getParam("minRelZ", minRelZ);
   nhPrivate.getParam("maxRelZ", maxRelZ);
   nhPrivate.getParam("disRatioZ", disRatioZ);
+  nhPrivate.getParam("odom_topic", odom_topic);
+  nhPrivate.getParam("lidar_scan_pub", lidar_scan_pub);
+  nhPrivate.getParam("terrain_map_topic", terrain_map_topic);
+  nhPrivate.getParam("terrain_frame_id", terrain_frame_id);
 
   ros::Subscriber subOdometry =
-      nh.subscribe<nav_msgs::Odometry>("/state_estimation", 5, odometryHandler);
+      nh.subscribe<nav_msgs::Odometry>(odom_topic, 5, odometryHandler);
 
   ros::Subscriber subLaserCloud = nh.subscribe<sensor_msgs::PointCloud2>(
-      "/registered_scan", 5, laserCloudHandler);
+      lidar_scan_pub, 5, laserCloudHandler);
 
   ros::Subscriber subJoystick =
       nh.subscribe<sensor_msgs::Joy>("/joy", 5, joystickHandler);
@@ -236,7 +246,7 @@ int main(int argc, char **argv) {
       nh.subscribe<std_msgs::Float32>("/map_clearing", 5, clearingHandler);
 
   ros::Publisher pubLaserCloud =
-      nh.advertise<sensor_msgs::PointCloud2>("/terrain_map", 2);
+      nh.advertise<sensor_msgs::PointCloud2>(terrain_map_topic, 2);
 
   for (int i = 0; i < terrainVoxelNum; i++) {
     terrainVoxelCloud[i].reset(new pcl::PointCloud<pcl::PointXYZI>());
@@ -648,7 +658,7 @@ int main(int argc, char **argv) {
       sensor_msgs::PointCloud2 terrainCloud2;
       pcl::toROSMsg(*terrainCloudElev, terrainCloud2);
       terrainCloud2.header.stamp = ros::Time().fromSec(laserCloudTime);
-      terrainCloud2.header.frame_id = "map";
+      terrainCloud2.header.frame_id = terrain_frame_id;
       pubLaserCloud.publish(terrainCloud2);
     }
 

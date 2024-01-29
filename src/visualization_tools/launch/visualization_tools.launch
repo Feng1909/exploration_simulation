@@ -13,6 +13,9 @@
     <param name="yawInterval" type="double" value="10.0" />
     <param name="overallMapDisplayInterval" type="int" value="2" />
     <param name="exploredAreaDisplayInterval" type="int" value="1" />
+    <param name="odom_topic" value="/state_estimation1" />
+    <param name="lidar_scan_pub" value="/registered_scan1" />
+    <param name="frame_id" value="map1" />
   </node>
 
   <node pkg="visualization_tools" type="realTimePlot.py" name="realTimePlot" output="screen" respawn="true"/>

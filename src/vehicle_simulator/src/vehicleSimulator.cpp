@@ -188,7 +188,7 @@ void scanHandler(const sensor_msgs::PointCloud2::ConstPtr& scanIn)
   sensor_msgs::PointCloud2 scanData2;
   pcl::toROSMsg(*scanData, scanData2);
   scanData2.header.stamp = ros::Time().fromSec(odomRecTime);
-  scanData2.header.frame_id = "map";
+  scanData2.header.frame_id = odomTran_frame_id;
   pubScanPointer->publish(scanData2);
 }
 

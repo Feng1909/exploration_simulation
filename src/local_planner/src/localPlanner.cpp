@@ -83,6 +83,9 @@ float joyDir = 0;
 string odom_topic = "/state_estimation";
 string lidar_scan_pub = "/registered_scan1";
 string terrain_map_topic = "/terrain_map1";
+string path_header_frame_id = "vehicle1";
+string navigation_boundary_topic = "/navigation_boundary1";
+string path_topic_name = "/path1";
 
 const int pathNum = 343;
 const int groupNum = 7;
@@ -543,6 +546,9 @@ int main(int argc, char** argv)
   nhPrivate.getParam("odom_topic", odom_topic);
   nhPrivate.getParam("lidar_scan_pub", lidar_scan_pub);
   nhPrivate.getParam("terrain_map_topic", terrain_map_topic);
+  nhPrivate.getParam("path_header_frame_id", path_header_frame_id);
+  nhPrivate.getParam("navigation_boundary_topic", navigation_boundary_topic);
+  nhPrivate.getParam("path_topic_name", path_topic_name);
 
   ros::Subscriber subOdometry = nh.subscribe<nav_msgs::Odometry>
                                 (odom_topic, 5, odometryHandler);
@@ -559,13 +565,13 @@ int main(int argc, char** argv)
 
   ros::Subscriber subSpeed = nh.subscribe<std_msgs::Float32> ("/speed", 5, speedHandler);
 
-  ros::Subscriber subBoundary = nh.subscribe<geometry_msgs::PolygonStamped> ("/navigation_boundary", 5, boundaryHandler);
+  ros::Subscriber subBoundary = nh.subscribe<geometry_msgs::PolygonStamped> (navigation_boundary_topic, 5, boundaryHandler);
 
   ros::Subscriber subAddedObstacles = nh.subscribe<sensor_msgs::PointCloud2> ("/added_obstacles", 5, addedObstaclesHandler);
 
   ros::Subscriber subCheckObstacle = nh.subscribe<std_msgs::Bool> ("/check_obstacle", 5, checkObstacleHandler);
 
-  ros::Publisher pubPath = nh.advertise<nav_msgs::Path> ("/path", 5);
+  ros::Publisher pubPath = nh.advertise<nav_msgs::Path> (path_topic_name, 5);
   nav_msgs::Path path;
 
   #if PLOTPATHSET == 1
@@ -858,7 +864,7 @@ int main(int argc, char** argv)
           }
 
           path.header.stamp = ros::Time().fromSec(odomTime);
-          path.header.frame_id = "vehicle";
+          path.header.frame_id = path_header_frame_id;
           pubPath.publish(path);
 
           #if PLOTPATHSET == 1
@@ -904,7 +910,7 @@ int main(int argc, char** argv)
           sensor_msgs::PointCloud2 freePaths2;
           pcl::toROSMsg(*freePaths, freePaths2);
           freePaths2.header.stamp = ros::Time().fromSec(odomTime);
-          freePaths2.header.frame_id = "vehicle";
+          freePaths2.header.frame_id = path_header_frame_id;
           pubFreePaths.publish(freePaths2);
           #endif
         }
@@ -930,7 +936,7 @@ int main(int argc, char** argv)
         path.poses[0].pose.position.z = 0;
 
         path.header.stamp = ros::Time().fromSec(odomTime);
-        path.header.frame_id = "vehicle";
+        path.header.frame_id = path_header_frame_id;
         pubPath.publish(path);
 
         #if PLOTPATHSET == 1
@@ -938,16 +944,11 @@ int main(int argc, char** argv)
         sensor_msgs::PointCloud2 freePaths2;
         pcl::toROSMsg(*freePaths, freePaths2);
         freePaths2.header.stamp = ros::Time().fromSec(odomTime);
-        freePaths2.header.frame_id = "vehicle";
+        freePaths2.header.frame_id = path_header_frame_id;
         pubFreePaths.publish(freePaths2);
         #endif
       }
 
-      /*sensor_msgs::PointCloud2 plannerCloud2;
-      pcl::toROSMsg(*plannerCloudCrop, plannerCloud2);
-      plannerCloud2.header.stamp = ros::Time().fromSec(odomTime);
-      plannerCloud2.header.frame_id = "vehicle";
-      pubLaserCloud.publish(plannerCloud2);*/
     }
 
     status = ros::ok();

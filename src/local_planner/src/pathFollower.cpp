@@ -94,6 +94,8 @@ double switchTime = 0;
 
 string odom_topic = "/state_estimation1";
 string cmd_topic = "/cmd_vel1";
+string cmd_header_frame_id = "vehicle1";
+string path_topic_name = "/path1";
 
 nav_msgs::Path path;
 
@@ -218,10 +220,12 @@ int main(int argc, char** argv)
   nhPrivate.getParam("joyToSpeedDelay", joyToSpeedDelay);
   nhPrivate.getParam("odom_topic", odom_topic);
   nhPrivate.getParam("cmd_topic", cmd_topic);
+  nhPrivate.getParam("cmd_header_frame_id", cmd_header_frame_id);
+  nhPrivate.getParam("path_topic_name", path_topic_name);
 
   ros::Subscriber subOdom = nh.subscribe<nav_msgs::Odometry> (odom_topic, 5, odomHandler);
 
-  ros::Subscriber subPath = nh.subscribe<nav_msgs::Path> ("/path", 5, pathHandler);
+  ros::Subscriber subPath = nh.subscribe<nav_msgs::Path> (path_topic_name, 5, pathHandler);
 
   ros::Subscriber subJoystick = nh.subscribe<sensor_msgs::Joy> ("/joy", 5, joystickHandler);
 
@@ -231,7 +235,8 @@ int main(int argc, char** argv)
 
   ros::Publisher pubSpeed = nh.advertise<geometry_msgs::TwistStamped> (cmd_topic, 5);
   geometry_msgs::TwistStamped cmd_vel;
-  cmd_vel.header.frame_id = "vehicle";
+
+  cmd_vel.header.frame_id = cmd_header_frame_id;
 
   if (autonomyMode) {
     joySpeed = autonomySpeed / maxSpeed;

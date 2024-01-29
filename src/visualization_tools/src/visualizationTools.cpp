@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ros/ros.h>
+#include <cstring>
 
 #include <message_filters/subscriber.h>
 #include <message_filters/synchronizer.h>
@@ -60,6 +61,10 @@ bool systemInited = false;
 float vehicleYaw = 0;
 float vehicleX = 0, vehicleY = 0, vehicleZ = 0;
 float exploredVolume = 0, travelingDis = 0, runtime = 0, timeDuration = 0;
+
+string odom_topic = "/state_estimation1";
+string lidar_scan_pub = "/registered_scan1";
+string frame_id = "map1";
 
 pcl::VoxelGrid<pcl::PointXYZ> overallMapDwzFilter;
 pcl::VoxelGrid<pcl::PointXYZI> exploredAreaDwzFilter;
@@ -137,7 +142,7 @@ void odometryHandler(const nav_msgs::Odometry::ConstPtr& odom)
   sensor_msgs::PointCloud2 trajectory2;
   pcl::toROSMsg(*trajectory, trajectory2);
   trajectory2.header.stamp = odom->header.stamp;
-  trajectory2.header.frame_id = "map";
+  trajectory2.header.frame_id = frame_id;
   pubTrajectoryPtr->publish(trajectory2);
 }
 
@@ -185,7 +190,7 @@ void laserCloudHandler(const sensor_msgs::PointCloud2ConstPtr& laserCloudIn)
     sensor_msgs::PointCloud2 exploredArea2;
     pcl::toROSMsg(*exploredAreaCloud, exploredArea2);
     exploredArea2.header.stamp = laserCloudIn->header.stamp;
-    exploredArea2.header.frame_id = "map";
+    exploredArea2.header.frame_id = frame_id;
     pubExploredAreaPtr->publish(exploredArea2);
 
     exploredAreaDisplayCount = 0;
@@ -223,10 +228,13 @@ int main(int argc, char** argv)
   nhPrivate.getParam("yawInterval", yawInterval);
   nhPrivate.getParam("overallMapDisplayInterval", overallMapDisplayInterval);
   nhPrivate.getParam("exploredAreaDisplayInterval", exploredAreaDisplayInterval);
+  nhPrivate.getParam("odom_topic", odom_topic);
+  nhPrivate.getParam("lidar_scan_pub", lidar_scan_pub);
+  nhPrivate.getParam("frame_id", frame_id);
 
-  ros::Subscriber subOdometry = nh.subscribe<nav_msgs::Odometry> ("/state_estimation", 5, odometryHandler);
+  ros::Subscriber subOdometry = nh.subscribe<nav_msgs::Odometry> (odom_topic, 5, odometryHandler);
 
-  ros::Subscriber subLaserCloud = nh.subscribe<sensor_msgs::PointCloud2> ("/registered_scan", 5, laserCloudHandler);
+  ros::Subscriber subLaserCloud = nh.subscribe<sensor_msgs::PointCloud2> (lidar_scan_pub, 5, laserCloudHandler);
 
   ros::Subscriber subRuntime = nh.subscribe<std_msgs::Float32> ("/runtime", 5, runtimeHandler);
 
@@ -283,7 +291,7 @@ int main(int argc, char** argv)
     overallMapDisplayCount++;
     if (overallMapDisplayCount >= 100 * overallMapDisplayInterval) {
       overallMap2.header.stamp = ros::Time().fromSec(systemTime);
-      overallMap2.header.frame_id = "map";
+      overallMap2.header.frame_id = frame_id;
       pubOverallMap.publish(overallMap2);
 
       overallMapDisplayCount = 0;

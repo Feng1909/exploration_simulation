@@ -54,6 +54,9 @@
     <param name="odom_topic" value="/state_estimation1" />
     <param name="lidar_scan_pub" value="/registered_scan1" />
     <param name="terrain_map_topic" value="/terrain_map1" />
+    <param name="path_header_frame_id" value="vehicle1" />
+    <param name="navigation_boundary_topic" value="/navigation_boundary1" />
+    <param name="path_topic_name" value="/path1" />
   </node>
 
   <node pkg="local_planner" type="pathFollower" name="pathFollower" output="screen" required="true">
@@ -87,10 +90,12 @@
     <param name="joyToSpeedDelay" value="$(arg joyToSpeedDelay)" />
     <param name="odom_topic" value="/state_estimation1" />
     <param name="cmd_topic" value="/cmd_vel1" />
+    <param name="path_topic_name" value="/path1" />
+    <param name="cmd_header_frame_id" value="vehicle1" />
   </node>
 
-  <node pkg="tf" type="static_transform_publisher" name="vehicleTransPublisher" args="-$(arg sensorOffsetX) -$(arg sensorOffsetY) 0 0 0 0 /sensor /vehicle 1000"/>
+  <node pkg="tf" type="static_transform_publisher" name="vehicleTransPublisher" args="-$(arg sensorOffsetX) -$(arg sensorOffsetY) 0 0 0 0 /sensor1 /vehicle1 1000"/>
 
-  <node pkg="tf" type="static_transform_publisher" name="sensorTransPublisher" args="0 0 $(arg cameraOffsetZ) -1.5707963 0 -1.5707963 /sensor /camera 1000"/>
+  <node pkg="tf" type="static_transform_publisher" name="sensorTransPublisher" args="0 0 $(arg cameraOffsetZ) -1.5707963 0 -1.5707963 /sensor1 /camera1 1000"/>
 
 </launch>
