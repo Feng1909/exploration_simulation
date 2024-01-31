@@ -2,7 +2,9 @@
 
   <arg name="world_name" default="garage"/>
 
-  <node pkg="visualization_tools" type="visualizationTools" name="visualizationTools" output="screen">
+<!-- For robot1 -->
+
+  <node pkg="visualization_tools" type="visualizationTools" name="visualizationTools1" output="screen">
     <param name="metricFile" type="string" value="$(find vehicle_simulator)/log/metrics" />
     <param name="trajFile" type="string" value="$(find vehicle_simulator)/log/trajectory" />
     <param name="mapFile" type="string" value="$(find vehicle_simulator)/mesh/$(arg world_name)/preview/pointcloud.ply" />
@@ -16,8 +18,48 @@
     <param name="odom_topic" value="/state_estimation1" />
     <param name="lidar_scan_pub" value="/registered_scan1" />
     <param name="frame_id" value="map1" />
+    <param name="overall_map_topic" value="/overall_map1" />
+    <param name="explored_areas_topic" value="/explored_areas1" />
+    <param name="trajectory_topic" value="/trajectory1" />
+    <param name="explored_volume" value="/explored_volume1" />
+    <param name="traveling_distance_topic" value="/traveling_distance1" />
+    <param name="time_duration_topic" value="/time_duration1" />
   </node>
 
-  <node pkg="visualization_tools" type="realTimePlot.py" name="realTimePlot" output="screen" respawn="true"/>
+  <node pkg="visualization_tools" type="realTimePlot.py" name="realTimePlot1" output="screen" respawn="true">
+    <param name="traveling_distance_topic" value="/traveling_distance1" />
+    <param name="time_duration_topic" value="/time_duration1" />
+    <param name="explored_volume_topic" value="/explored_volume1" />
+  </node>
+
+<!-- For robot2 -->
+
+  <node pkg="visualization_tools" type="visualizationTools" name="visualizationTools2" output="screen">
+    <param name="metricFile" type="string" value="$(find vehicle_simulator)/log/metrics" />
+    <param name="trajFile" type="string" value="$(find vehicle_simulator)/log/trajectory" />
+    <param name="mapFile" type="string" value="$(find vehicle_simulator)/mesh/$(arg world_name)/preview/pointcloud.ply" />
+    <param name="overallMapVoxelSize" type="double" value="0.5" />
+    <param name="exploredAreaVoxelSize" type="double" value="0.3" />
+    <param name="exploredVolumeVoxelSize" type="double" value="0.5" />
+    <param name="transInterval" type="double" value="0.2" />
+    <param name="yawInterval" type="double" value="10.0" />
+    <param name="overallMapDisplayInterval" type="int" value="2" />
+    <param name="exploredAreaDisplayInterval" type="int" value="1" />
+    <param name="odom_topic" value="/state_estimation2" />
+    <param name="lidar_scan_pub" value="/registered_scan2" />
+    <param name="frame_id" value="map2" />
+    <param name="overall_map_topic" value="/overall_map2" />
+    <param name="explored_areas_topic" value="/explored_areas2" />
+    <param name="trajectory_topic" value="/trajectory2" />
+    <param name="explored_volume_topic" value="/explored_volume2" />
+    <param name="traveling_distance_topic" value="/traveling_distance2" />
+    <param name="time_duration_topic" value="/time_duration2" />
+  </node>
+
+  <node pkg="visualization_tools" type="realTimePlot.py" name="realTimePlot2" output="screen" respawn="true">
+    <param name="traveling_distance_topic" value="/traveling_distance2" />
+    <param name="time_duration_topic" value="/time_duration2" />
+    <param name="explored_volume_topic" value="/explored_volume2" />
+  </node>
 
 </launch>

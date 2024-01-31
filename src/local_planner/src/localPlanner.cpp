@@ -86,6 +86,8 @@ string terrain_map_topic = "/terrain_map1";
 string path_header_frame_id = "vehicle1";
 string navigation_boundary_topic = "/navigation_boundary1";
 string path_topic_name = "/path1";
+string waypoint_topic = "/way_point1";
+string freepath_topic = "/free_paths1";
 
 const int pathNum = 343;
 const int groupNum = 7;
@@ -549,6 +551,8 @@ int main(int argc, char** argv)
   nhPrivate.getParam("path_header_frame_id", path_header_frame_id);
   nhPrivate.getParam("navigation_boundary_topic", navigation_boundary_topic);
   nhPrivate.getParam("path_topic_name", path_topic_name);
+  nhPrivate.getParam("waypoint_topic", waypoint_topic);
+  nhPrivate.getParam("freepath_topic", freepath_topic);
 
   ros::Subscriber subOdometry = nh.subscribe<nav_msgs::Odometry>
                                 (odom_topic, 5, odometryHandler);
@@ -561,7 +565,7 @@ int main(int argc, char** argv)
 
   ros::Subscriber subJoystick = nh.subscribe<sensor_msgs::Joy> ("/joy", 5, joystickHandler);
 
-  ros::Subscriber subGoal = nh.subscribe<geometry_msgs::PointStamped> ("/way_point", 5, goalHandler);
+  ros::Subscriber subGoal = nh.subscribe<geometry_msgs::PointStamped> (waypoint_topic, 5, goalHandler);
 
   ros::Subscriber subSpeed = nh.subscribe<std_msgs::Float32> ("/speed", 5, speedHandler);
 
@@ -575,7 +579,7 @@ int main(int argc, char** argv)
   nav_msgs::Path path;
 
   #if PLOTPATHSET == 1
-  ros::Publisher pubFreePaths = nh.advertise<sensor_msgs::PointCloud2> ("/free_paths", 2);
+  ros::Publisher pubFreePaths = nh.advertise<sensor_msgs::PointCloud2> (freepath_topic, 2);
   #endif
 
   //ros::Publisher pubLaserCloud = nh.advertise<sensor_msgs::PointCloud2> ("/stacked_scans", 2);

@@ -65,6 +65,12 @@ float exploredVolume = 0, travelingDis = 0, runtime = 0, timeDuration = 0;
 string odom_topic = "/state_estimation1";
 string lidar_scan_pub = "/registered_scan1";
 string frame_id = "map1";
+string overall_map_topic = "/overall_map";
+string explored_areas_topic = "/explored_areas1";
+string trajectory_topic = "/trajectory1";
+string explored_volume_topic = "/explored_volume1";
+string traveling_distance_topic = "/traveling_distance";
+string time_duration_topic = "/time_duration";
 
 pcl::VoxelGrid<pcl::PointXYZ> overallMapDwzFilter;
 pcl::VoxelGrid<pcl::PointXYZI> exploredAreaDwzFilter;
@@ -231,6 +237,12 @@ int main(int argc, char** argv)
   nhPrivate.getParam("odom_topic", odom_topic);
   nhPrivate.getParam("lidar_scan_pub", lidar_scan_pub);
   nhPrivate.getParam("frame_id", frame_id);
+  nhPrivate.getParam("overall_map_topic", overall_map_topic);
+  nhPrivate.getParam("explored_areas_topic", explored_areas_topic);
+  nhPrivate.getParam("trajectory_topic", trajectory_topic);
+  nhPrivate.getParam("explored_volume_topic", explored_volume_topic);
+  nhPrivate.getParam("traveling_distance_topic", traveling_distance_topic);
+  nhPrivate.getParam("time_duration_topic", time_duration_topic);
 
   ros::Subscriber subOdometry = nh.subscribe<nav_msgs::Odometry> (odom_topic, 5, odometryHandler);
 
@@ -238,21 +250,21 @@ int main(int argc, char** argv)
 
   ros::Subscriber subRuntime = nh.subscribe<std_msgs::Float32> ("/runtime", 5, runtimeHandler);
 
-  ros::Publisher pubOverallMap = nh.advertise<sensor_msgs::PointCloud2> ("/overall_map", 5);
+  ros::Publisher pubOverallMap = nh.advertise<sensor_msgs::PointCloud2> (overall_map_topic, 5);
 
-  ros::Publisher pubExploredArea = nh.advertise<sensor_msgs::PointCloud2> ("/explored_areas", 5);
+  ros::Publisher pubExploredArea = nh.advertise<sensor_msgs::PointCloud2> (explored_areas_topic, 5);
   pubExploredAreaPtr = &pubExploredArea;
 
-  ros::Publisher pubTrajectory = nh.advertise<sensor_msgs::PointCloud2> ("/trajectory", 5);
+  ros::Publisher pubTrajectory = nh.advertise<sensor_msgs::PointCloud2> (trajectory_topic, 5);
   pubTrajectoryPtr = &pubTrajectory;
 
-  ros::Publisher pubExploredVolume = nh.advertise<std_msgs::Float32> ("/explored_volume", 5);
+  ros::Publisher pubExploredVolume = nh.advertise<std_msgs::Float32> (explored_volume_topic, 5);
   pubExploredVolumePtr = &pubExploredVolume;
 
-  ros::Publisher pubTravelingDis = nh.advertise<std_msgs::Float32> ("/traveling_distance", 5);
+  ros::Publisher pubTravelingDis = nh.advertise<std_msgs::Float32> (traveling_distance_topic, 5);
   pubTravelingDisPtr = &pubTravelingDis;
 
-  ros::Publisher pubTimeDuration = nh.advertise<std_msgs::Float32> ("/time_duration", 5);
+  ros::Publisher pubTimeDuration = nh.advertise<std_msgs::Float32> (time_duration_topic, 5);
   pubTimeDurationPtr = &pubTimeDuration;
 
   //ros::Publisher pubRuntime = nh.advertise<std_msgs::Float32> ("/runtime", 5);

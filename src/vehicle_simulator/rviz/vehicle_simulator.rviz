@@ -48,6 +48,18 @@ Visualization Manager:
       Transport Hint: raw
       Unreliable: false
       Value: true
+    - Class: rviz/Image
+      Enabled: true
+      Image Topic: /camera2/image
+      Max Value: 1
+      Median window: 5
+      Min Value: 0
+      Name: Image
+      Normalize Range: true
+      Queue Size: 2
+      Transport Hint: raw
+      Unreliable: false
+      Value: true
     - Alpha: 0.20000000298023224
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
@@ -246,7 +258,37 @@ Visualization Manager:
       Size (Pixels): 2
       Size (m): 0.019999999552965164
       Style: Points
-      Topic: /free_paths
+      Topic: /free_paths1
+      Unreliable: false
+      Use Fixed Frame: true
+      Use rainbow: true
+      Value: true
+    - Alpha: 1
+      Autocompute Intensity Bounds: false
+      Autocompute Value Bounds:
+        Max Value: 10
+        Min Value: -10
+        Value: true
+      Axis: Z
+      Channel Name: intensity
+      Class: rviz/PointCloud2
+      Color: 0; 170; 255
+      Color Transformer: Intensity
+      Decay Time: 0
+      Enabled: true
+      Invert Rainbow: false
+      Max Color: 255; 255; 255
+      Max Intensity: 6
+      Min Color: 0; 0; 0
+      Min Intensity: 0
+      Name: FreePaths
+      Position Transformer: XYZ
+      Queue Size: 10
+      Selectable: true
+      Size (Pixels): 2
+      Size (m): 0.019999999552965164
+      Style: Points
+      Topic: /free_paths2
       Unreliable: false
       Use Fixed Frame: true
       Use rainbow: true
@@ -258,7 +300,17 @@ Visualization Manager:
       History Length: 1
       Name: Waypoint
       Radius: 1.2000000476837158
-      Topic: /way_point
+      Topic: /way_point1
+      Unreliable: false
+      Value: true
+    - Alpha: 1
+      Class: rviz/PointStamped
+      Color: 204; 41; 204
+      Enabled: true
+      History Length: 1
+      Name: Waypoint
+      Radius: 1.2000000476837158
+      Topic: /way_point2
       Unreliable: false
       Value: true
     - Alpha: 1
@@ -398,8 +450,10 @@ Visualization Manager:
   Name: root
   Tools:
     - Class: rviz/MoveCamera
-    - Class: rviz/WaypointTool
-      Topic: waypoint
+    - Class: rviz/WaypointTool1
+      Topic: waypoint1
+    - Class: rviz/WaypointTool2
+      Topic: waypoint2
   Value: true
   Views:
     Current:

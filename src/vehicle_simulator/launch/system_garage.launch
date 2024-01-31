@@ -7,15 +7,15 @@
   <arg name="vehicleY" default="0"/>
   <arg name="terrainZ" default="0"/>
   <arg name="vehicleYaw" default="0"/>
-  <arg name="gazebo_gui" default="true"/>
+  <arg name="gazebo_gui" default="false"/>
   <arg name="checkTerrainConn" default="true"/>
 
   <!-- <include file="$(find ps3joy)/launch/ps3.launch" /> -->
 
   <include file="$(find local_planner)/launch/local_planner.launch" >
     <arg name="cameraOffsetZ" value="$(arg cameraOffsetZ)"/>
-    <arg name="goalX" value="$(arg vehicleX)"/>
-    <arg name="goalY" value="$(arg vehicleY)"/>
+    <!-- <arg name="goalX" value="$(arg vehicleX)"/>
+    <arg name="goalY" value="$(arg vehicleY)"/> -->
   </include>
 
   <include file="$(find terrain_analysis)/launch/terrain_analysis.launch" />

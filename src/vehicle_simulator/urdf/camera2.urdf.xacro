@@ -41,8 +41,8 @@
         <alwaysOn>true</alwaysOn>
         <updateRate>0.0</updateRate>
         <cameraName>camera2</cameraName>
-        <imageTopicName>image2</imageTopicName>
-        <cameraInfoTopicName>camera_info2</cameraInfoTopicName>
+        <imageTopicName>image</imageTopicName>
+        <cameraInfoTopicName>camera_info</cameraInfoTopicName>
         <frameName>camera2</frameName>
         <hackBaseline>0.0</hackBaseline>
         <distortionK1>0.0</distortionK1>

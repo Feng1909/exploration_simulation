@@ -17,12 +17,12 @@ namespace rviz
 {
 class StringProperty;
 
-class WaypointTool : public PoseTool
+class WaypointTool1 : public PoseTool
 {
   Q_OBJECT
 public:
-  WaypointTool();
-  virtual ~WaypointTool()
+  WaypointTool1();
+  virtual ~WaypointTool1()
   {
   }
   virtual void onInitialize();
@@ -44,6 +44,35 @@ private:
 
   StringProperty* topic_property_;
 };
+
+class WaypointTool2 : public PoseTool
+{
+  Q_OBJECT
+public:
+  WaypointTool2();
+  virtual ~WaypointTool2()
+  {
+  }
+  virtual void onInitialize();
+
+protected:
+  virtual void odomHandler(const nav_msgs::Odometry::ConstPtr& odom);
+  virtual void onPoseSet(double x, double y, double theta);
+
+private Q_SLOTS:
+  void updateTopic();
+
+private:
+  float vehicle_z;
+
+  ros::NodeHandle nh_;
+  ros::Subscriber sub_;
+  ros::Publisher pub_;
+  ros::Publisher pub_joy_;
+
+  StringProperty* topic_property_;
+};
+
 }
 
 #endif  // WAYPOINT_RVIZ_PLUGIN_WAYPOINT_TOOL_H
