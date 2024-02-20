@@ -138,6 +138,57 @@
     <child link="right_rear_wheel"/>
   </joint>
 
+  <!-- <link name="imu">
+    <visual>
+      <geometry>
+        <box size="0.01 0.01 0.005" />
+      </geometry>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <material name="black">
+        <color rgba="0.0 0.0 0.0 1.0" />
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.01 0.01 0.005" />
+      </geometry>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0" />
+    </collision>
+    <inertial>
+      <origin xyz="0 0 0" />
+      <mass value="0.05" />
+      <inertia ixx="6.64E-04" ixy="0" ixz="0" iyy="6.64E-04" iyz="0" izz="1.02E-03" />
+    </inertial>
+  </link>
+
+  <joint name="imu_joint" type="fixed">
+    <parent link="base_link" />
+    <child link="imu" />
+    <origin xyz="0 0 0.02" />
+    <axis xyz="0 0 1" />
+  </joint>
+
+  <gazebo reference="imu">
+    <material>Gazebo/Orange</material>
+    <gravity>false</gravity>
+    <sensor name="imu_sensor" type="imu">
+      <always_on>false</always_on>
+      <update_rate>100</update_rate>
+      <visualize>true</visualize>
+      <topic>__default_topic__</topic>
+      <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
+        <topicName>imu</topicName>
+        <bodyName>imu</bodyName>
+        <updateRateHZ>100.0</updateRateHZ>
+        <gaussianNoise>0.0</gaussianNoise>
+        <xyzOffset>0 0 0</xyzOffset>
+        <rpyOffset>0 0 0</rpyOffset>
+        <frameName>imu</frameName>
+      </plugin>
+      <pose>0 0 0 0 0 0</pose>
+    </sensor>
+  </gazebo> -->
+
   <xacro:gazebo_material ref="base_link"         color="Red" />
   <xacro:gazebo_material ref="lidar_holder"      color="Black" />
   <xacro:gazebo_material ref="left_front_wheel"  color="Black" />

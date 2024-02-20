@@ -1,0 +1,15 @@
+<launch>
+  <!-- Launch Gazebo with the world and spawn the robot -->
+  <arg name="world_file" default="$(find gazebo_ros)/worlds/empty.world"/>
+  <arg name="urdf_file" default="$(find vehicle_simulator)/urdf/imu_robot.urdf"/>
+  <arg name="world_name" default="garage"/>
+
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="$(find vehicle_simulator)/world/$(arg world_name).world"/>
+    <arg name="paused" value="false"/>
+    <arg name="gui" value="true"/>
+  </include>
+
+  <!-- Spawn robot -->
+  <node name="spawn_robot" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen" args="-file $(find vehicle_simulator)/urdf/imu.urdf -urdf -model imu_robot"/>
+</launch>

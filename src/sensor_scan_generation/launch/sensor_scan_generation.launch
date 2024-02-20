@@ -1,5 +1,25 @@
 <launch>
 
-  <node pkg="sensor_scan_generation" type="sensorScanGeneration" name="sensorScanGeneration" output="screen" required="true"/>
+  <node pkg="sensor_scan_generation" type="sensorScanGeneration" name="sensorScanGeneration1" output="screen" required="true">
+    <param name="state_estimation_topic" value="/state_estimation1" />
+    <param name="registered_scan_topic" value="/registered_scan1" />
+    <param name="state_estimation_at_scan_topic" value="/state_estimation_at_scan1" />
+    <param name="sensor_scan_topic" value="/sensor_scan1" />
+    <param name="odometryIn_header_frame_id" value="map1" />
+    <param name="odometryIn_child_frame_id" value="sensor_at_scan1" />
+    <param name="laser_scan_topic" value="/laser_scan1" />
+    <param name="laser_header_frame_id" value="vehicle1" />
+  </node>
+
+  <node pkg="sensor_scan_generation" type="sensorScanGeneration" name="sensorScanGeneration2" output="screen" required="true">
+    <param name="state_estimation_topic" value="/state_estimation2" />
+    <param name="registered_scan_topic" value="/registered_scan2" />
+    <param name="state_estimation_at_scan_topic" value="/state_estimation_at_scan2" />
+    <param name="sensor_scan_topic" value="/sensor_scan2" />
+    <param name="odometryIn_header_frame_id" value="map2" />
+    <param name="odometryIn_child_frame_id" value="sensor_at_scan2" />
+    <param name="laser_scan_topic" value="/laser_scan2" />
+    <param name="laser_header_frame_id" value="vehicle2" />
+  </node>
 
 </launch>
