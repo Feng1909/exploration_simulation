@@ -8,7 +8,7 @@
     <param name="odometryIn_header_frame_id" value="map1" />
     <param name="odometryIn_child_frame_id" value="sensor_at_scan1" />
     <param name="laser_scan_topic" value="/laser_scan1" />
-    <param name="laser_header_frame_id" value="vehicle1" />
+    <param name="laser_header_frame_id" value="laser_frame1" />
   </node>
 
   <node pkg="sensor_scan_generation" type="sensorScanGeneration" name="sensorScanGeneration2" output="screen" required="true">
@@ -19,7 +19,7 @@
     <param name="odometryIn_header_frame_id" value="map2" />
     <param name="odometryIn_child_frame_id" value="sensor_at_scan2" />
     <param name="laser_scan_topic" value="/laser_scan2" />
-    <param name="laser_header_frame_id" value="vehicle2" />
+    <param name="laser_header_frame_id" value="laser_frame2" />
   </node>
 
 </launch>

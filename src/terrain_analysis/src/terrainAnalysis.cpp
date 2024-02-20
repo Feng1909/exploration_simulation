@@ -581,7 +581,7 @@ int main(int argc, char **argv) {
               if (disZ >= 0 && disZ < vehicleHeight &&
                   planarPointElevSize >= minBlockPointNum) {
                 terrainCloudElev->push_back(point);
-                terrainCloudElev->points[terrainCloudElevSize].intensity = disZ;
+                terrainCloudElev->points[terrainCloudElevSize].intensity = 1.0;
 
                 terrainCloudElevSize++;
               }

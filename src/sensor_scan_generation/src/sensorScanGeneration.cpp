@@ -122,7 +122,7 @@ void laserCloudAndOdometryHandler(const nav_msgs::Odometry::ConstPtr& odometry,
   laserScanMsg.angle_increment = (0.1/180*M_PI); // 角度步长
 
   // 设置 LaserScan 消息的范围（最小和最大测量距离）
-  laserScanMsg.range_min = 0.0; // 最小测量距离
+  laserScanMsg.range_min = 0.3; // 最小测量距离
   laserScanMsg.range_max = 100.0; // 最大测量距离
 
   // int beam_size = ceil(2 * M_PI / laserScanMsg.angle_increment);
