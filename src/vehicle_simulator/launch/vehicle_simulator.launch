@@ -42,6 +42,8 @@
     <arg name="world_name" value="$(find vehicle_simulator)/world/$(arg world_name).world"/>
   </include>
 
+  <!-- <node pkg="map_fusion" type="map_fusion_node" name="map_fusion" /> -->
+
   <param name="camera_description1" command="$(find xacro)/xacro --inorder '$(find vehicle_simulator)/urdf/camera1.urdf.xacro'" />
   <node pkg="gazebo_ros" type="spawn_model" name="spawn_camera1" args="-urdf -param /camera_description1 -model camera1"/>
 
