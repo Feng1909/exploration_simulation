@@ -9,6 +9,7 @@ project(map_fusion)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   nav_msgs
+  geometry_msgs
   rospy
   roscpp
 )
