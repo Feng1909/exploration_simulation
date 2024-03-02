@@ -27,14 +27,18 @@ void map_fusion(ros::Publisher pub) {
     int height = map1.info.height;
     int width = map1.info.width;
     double resolution = map1.info.resolution;
-    // map2.info.origin.position.x += 2;
+
     map_fusion.header.frame_id = "map";
     map_fusion.info.resolution = map1.info.resolution;
-    map_fusion.info.width = std::max(map1.info.width, map2.info.width);
-    map_fusion.info.height = std::max(map1.info.height, map2.info.height);
-    // map_fusion.info.origin = map1.info.origin;
+    map_fusion.info.width = std::max(map1.info.width - int(std::fabs(map1.info.origin.position.x)/resolution),
+                                        2+map2.info.width - int(std::fabs(map2.info.origin.position.x)/resolution)) +
+                             std::max(std::fabs(map1.info.origin.position.x)/resolution, std::fabs(map2.info.origin.position.x)/resolution-2);
+    map_fusion.info.height = std::max(map1.info.height - int(std::fabs(map1.info.origin.position.y)/resolution),
+                                        map2.info.height - int(std::fabs(map2.info.origin.position.y)/resolution)) +
+                             std::max(std::fabs(map1.info.origin.position.y)/resolution, std::fabs(map2.info.origin.position.y)/resolution);
     map_fusion.info.origin.position.x = std::min(map1.info.origin.position.x, map2.info.origin.position.x+2);
     map_fusion.info.origin.position.y = std::min(map1.info.origin.position.y, map2.info.origin.position.y);
+    
     for (int i=0; i<map_fusion.info.height; i++) {
         for (int j=0; j<map_fusion.info.width; j++) {
             map_fusion.data.push_back(-1);
@@ -49,8 +53,6 @@ void map_fusion(ros::Publisher pub) {
     std::cout<<"bias: "<<bias1.x<<" "<<bias1.y<<std::endl;
     for (int i=0; i<map1.info.height; i++) {
         for (int j=0; j<map1.info.width; j++) {
-            // std::cout<<resolution<<std::endl;
-            // std::cout<<(i+bias1.y)*map_fusion.info.width+j+bias1.x<<std::endl;
             if (map_fusion.data[(i+bias1.y)*map_fusion.info.width+j+bias1.x] == -1)
                 map_fusion.data[(i+bias1.y)*map_fusion.info.width+j+bias1.x] = map1.data[i*map1.info.width+j];
             else if (map1.data[i*map1.info.width+j] != -1)
@@ -60,7 +62,6 @@ void map_fusion(ros::Publisher pub) {
     }
     for (int i=0; i<map2.info.height; i++) {
         for (int j=0; j<map2.info.width; j++) {
-            // std::cout<<(i+bias2.y)*map_fusion.info.width+j+bias2.x<<std::endl;
             if (map_fusion.data[(i+bias2.y)*map_fusion.info.width+j+bias2.x] == -1)
                 map_fusion.data[(i+bias2.y)*map_fusion.info.width+j+bias2.x] = map2.data[i*map2.info.width+j];
             else if (map2.data[i*map2.info.width+j] != -1)
@@ -69,29 +70,6 @@ void map_fusion(ros::Publisher pub) {
         }
     }
     std::cout<<"size:"<<map_fusion.data.size()<<std::endl;
-    // for (int i=0; i<height; i++) {
-    //     if (i >= map1.info.height && i>= map2.info.height)
-    //         break;
-    //     for (int j=0; j<width; j++) {
-    //         if (j >= map1.info.width && i >= map2.info.height)
-    //             break;
-    //         // if (i < map1.info.height && j < map1.info.width) {
-    //         //     if (map_fusion.data[i*map_fusion.info.width+j] == -1)
-    //         //         map_fusion.data[i*map_fusion.info.width+j] = map1.data[i*map1.info.width+j];
-    //         //     else if (map1.data[i*map1.info.width+j] != -1)
-    //         //         map_fusion.data[i*map_fusion.info.width+j] = \
-    //         //             std::min(map_fusion.data[i*map_fusion.info.width+j], map1.data[i*map1.info.width+j]);
-    //         // }
-    //         // if (i < map2.info.height && j < map2.info.width) {
-    //         //     if (map_fusion.data[i*map_fusion.info.width+j] == -1)
-    //         //         map_fusion.data[i*map_fusion.info.width+j] = map2.data[i*map2.info.width+j];
-    //         //     else if (map2.data[i*map2.info.width+j] != -1)
-    //         //         map_fusion.data[i*map_fusion.info.width+j] = \
-    //         //             std::min(map_fusion.data[i*map_fusion.info.width+j], map2.data[i*map2.info.width+j]);
-    //         // }
-
-    //     }
-    // }
     ros::Time t2 = ros::Time::now();
     std::cout<<"cost time: "<<t2-t1<<std::endl;
     pub.publish(map_fusion);
