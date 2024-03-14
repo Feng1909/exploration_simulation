@@ -1,0 +1,4 @@
+<launch>
+    <node pkg="subregion" type="subregion_node" name="subregion_node" output="screen" />
+        <param name="square_length" type="double" value="10" />
+</launch>
