@@ -16,6 +16,17 @@ find_package(catkin REQUIRED COMPONENTS
   visualization_msgs
 )
 
+add_message_files(
+  FILES
+  subregion_map.msg
+)
+
+generate_messages(
+  DEPENDENCIES
+  std_msgs
+  geometry_msgs
+)
+
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES subregion

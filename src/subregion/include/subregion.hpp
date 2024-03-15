@@ -4,6 +4,7 @@
 #include <nav_msgs/Odometry.h>
 #include <geometry_msgs/Point.h>
 #include <ros/ros.h>
+#include "subregion/subregion_map.h"
 
 enum subregion_status
 {
@@ -31,6 +32,7 @@ nav_msgs::Odometry car_state_1, car_state_2;
 
 ros::Publisher marker_pub;
 ros::Publisher subregion_pub;
+ros::Publisher subregion_map_pub;
 ros::Subscriber map_sub;
 ros::Subscriber car_state_sub_1, car_state_sub_2;
 
@@ -59,6 +61,9 @@ void mapCallback(nav_msgs::OccupancyGrid msg) {
 
 void gen_subregion() {
     squares.clear();
+    subregion::subregion_map subregion_map;
+    subregion_map.points.clear();
+    subregion_map.status.clear();
     for (auto i=x.begin(); i!=x.end(); i++) {
         for (auto j=y.begin(); j!=y.end(); j++) {
             subregion_square square;
@@ -89,11 +94,14 @@ void gen_subregion() {
                 square.states = EXPLORED;
             else if (occupied == 0)
                 square.states = OBSTACLE;
-            else {
+            else 
                 square.states = UNEXPLORED;
-
-            }
             squares.push_back(square);
+            geometry_msgs::Point pos;
+            pos.x = (square.left_down_x + square.right_up_x)/2;
+            pos.y = (square.left_down_y + square.right_up_y)/2;
+            subregion_map.points.push_back(pos);
+            subregion_map.status.push_back(occupied);
         }
     }
     visualization_msgs::Marker marker;
