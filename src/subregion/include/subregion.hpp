@@ -1,9 +1,12 @@
+#pragma once
 #include <iostream>
 #include <visualization_msgs/Marker.h>
 #include <nav_msgs/OccupancyGrid.h>
 #include <nav_msgs/Odometry.h>
 #include <geometry_msgs/Point.h>
 #include <ros/ros.h>
+
+// msg
 #include "subregion/subregion_map.h"
 
 enum subregion_status
