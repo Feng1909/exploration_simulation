@@ -6,6 +6,7 @@ int main(int argc, char** argv) {
     ros::NodeHandle nh;
 
     map_sub = nh.subscribe<nav_msgs::OccupancyGrid>("/map", 1, mapCallback);
+    subregion_map_sub = nh.subscribe<subregion::subregion_map>("/subregion_map", 1, subregion_map_callback);
     car_state_sub_1 = nh.subscribe<nav_msgs::Odometry>("/state_estimation1", 1, car_state_callback_1);
     car_state_sub_2 = nh.subscribe<nav_msgs::Odometry>("/state_estimation2", 1, car_state_callback_2);
 
@@ -27,6 +28,8 @@ int main(int argc, char** argv) {
     tree_vis.color.a = 1;
     // tree_vis.points.push_back(start);
     // tree_vis.points.push_back(start);
+    target.x = 1;
+    target.y = 1;
     path_points.push_back(start);
     while(ros::ok()) {
         ros::spinOnce();

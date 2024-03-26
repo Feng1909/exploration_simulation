@@ -31,6 +31,7 @@ double init_x = 0;
 double init_y = 0;
 double resolution = 0;
 std::vector<subregion_square> squares;
+subregion::subregion_map subregion_map;
 nav_msgs::Odometry car_state_1, car_state_2;
 
 ros::Publisher marker_pub;
@@ -64,9 +65,6 @@ void mapCallback(nav_msgs::OccupancyGrid msg) {
 
 void gen_subregion() {
     squares.clear();
-    subregion::subregion_map subregion_map;
-    subregion_map.points.clear();
-    subregion_map.status.clear();
     for (auto i=x.begin(); i!=x.end(); i++) {
         for (auto j=y.begin(); j!=y.end(); j++) {
             subregion_square square;
@@ -103,10 +101,41 @@ void gen_subregion() {
             geometry_msgs::Point pos;
             pos.x = (square.left_down_x + square.right_up_x)/2;
             pos.y = (square.left_down_y + square.right_up_y)/2;
-            subregion_map.points.push_back(pos);
-            subregion_map.status.push_back(occupied);
+            // subregion_map.points.push_back(pos);
+            // std::cout<<pos;
+            geometry_msgs::Point localization;
+            localization.x = int(-(-map.info.origin.position.x - pos.x)/square_length);
+            if (-map.info.origin.position.x > pos.x) localization.x -= 1;
+            localization.y = int(-(-map.info.origin.position.y - pos.y)/square_length);
+            if (-map.info.origin.position.y > pos.y) localization.y -= 1;
+
+            bool in_flag = false;
+            for (int i=0; i<subregion_map.subregions.size(); i++) {
+                if (subregion_map.subregions[i].localization.x == localization.x && subregion_map.subregions[i].localization.y == localization.y) {
+                    in_flag = true;
+                    break;
+                }
+            }
+            if (!in_flag) {
+                subregion::subregion subregion;
+                geometry_msgs::Point left_down, right_up;
+                left_down.x = square.left_down_x;
+                left_down.y = square.left_down_y;
+                right_up.x = square.right_up_x;
+                right_up.y = square.right_up_y;
+                subregion.localization = localization;
+                subregion.left_down = left_down;
+                subregion.right_up = right_up;
+                subregion.pos = pos;
+                if (square.states == OBSTACLE)
+                    subregion.status = 1;
+                subregion_map.subregions.push_back(subregion);
+            }
         }
     }
+    std::cout<<"pubing: "<<subregion_map.subregions.size()<<std::endl;
+    subregion_map_pub.publish(subregion_map);
+
     visualization_msgs::Marker marker;
     marker.header.frame_id = "carto_map1";
     marker.ns = "SubRegion";
