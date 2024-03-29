@@ -6,17 +6,18 @@ int main(int argc, char** argv) {
     ros::NodeHandle nh;
 
     map_sub = nh.subscribe<nav_msgs::OccupancyGrid>("/map", 1, mapCallback);
-    subregion_map_sub = nh.subscribe<subregion::subregion_map>("/subregion_map", 1, subregion_map_callback);
+    subregion_map_sub = nh.subscribe<common_msgs::subregion_all>("/subregion_map", 1, subregion_map_callback);
+    // std::cout<<"haha"<<std::endl;
     car_state_sub_1 = nh.subscribe<nav_msgs::Odometry>("/state_estimation1", 1, car_state_callback_1);
     car_state_sub_2 = nh.subscribe<nav_msgs::Odometry>("/state_estimation2", 1, car_state_callback_2);
 
     rrt_planner_vis_pub = nh.advertise<visualization_msgs::Marker>("/rrt_planner_vis", 1);
 
-    ros::Rate rate(1);
+    ros::Rate rate(10);
     geometry_msgs::Point start;
     start.x = 0;
     start.y = 0;
-    tree_vis.header.frame_id = "carto_map1";
+    tree_vis.header.frame_id = "map";
     tree_vis.type = 5;
     tree_vis.action = 0;
     tree_vis.scale.x = 0.1;
@@ -30,7 +31,7 @@ int main(int argc, char** argv) {
     // tree_vis.points.push_back(start);
     target.x = 1;
     target.y = 1;
-    path_points.push_back(start);
+    // path_points.push_back(start);
     while(ros::ok()) {
         ros::spinOnce();
         rrt_expand();

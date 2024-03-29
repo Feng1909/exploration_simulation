@@ -12,7 +12,7 @@ find_package(catkin REQUIRED COMPONENTS
   nav_msgs
   roscpp
   std_msgs
-  subregion
+  common_msgs
   visualization_msgs
 )
 

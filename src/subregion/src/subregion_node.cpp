@@ -8,7 +8,7 @@ int main(int argc, char** argv) {
     car_state_sub_2 = nh.subscribe<nav_msgs::Odometry>("/state_estimation2", 1, car_state_callback_2);
     marker_pub = nh.advertise<visualization_msgs::Marker>("/subregion_marker", 1);
     subregion_pub = nh.advertise<visualization_msgs::Marker>("/subregion", 1);
-    subregion_map_pub = nh.advertise<subregion::subregion_map>("/subregion_map", 1);
+    subregion_map_pub = nh.advertise<common_msgs::subregion_all>("/subregion_map", 1);
     ros::Rate rate(10);
     nh.getParam("square_length", square_length);
     while (ros::ok()) {

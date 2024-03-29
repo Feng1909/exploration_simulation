@@ -7,7 +7,8 @@
 #include <ros/ros.h>
 
 // msg
-#include "subregion/subregion_map.h"
+#include "common_msgs/subregion_all.h"
+#include "common_msgs/subregion_single.h"
 
 enum subregion_status
 {
@@ -31,7 +32,7 @@ double init_x = 0;
 double init_y = 0;
 double resolution = 0;
 std::vector<subregion_square> squares;
-subregion::subregion_map subregion_map;
+common_msgs::subregion_all subregion_map;
 nav_msgs::Odometry car_state_1, car_state_2;
 
 ros::Publisher marker_pub;
@@ -117,15 +118,17 @@ void gen_subregion() {
                 }
             }
             if (!in_flag) {
-                subregion::subregion subregion;
+                common_msgs::subregion_single subregion;
                 geometry_msgs::Point left_down, right_up;
-                left_down.x = square.left_down_x;
-                left_down.y = square.left_down_y;
-                right_up.x = square.right_up_x;
-                right_up.y = square.right_up_y;
+                left_down.x = square.left_down_x + map.info.origin.position.x;
+                left_down.y = square.left_down_y + map.info.origin.position.y;
+                right_up.x = square.right_up_x + map.info.origin.position.x;
+                right_up.y = square.right_up_y + map.info.origin.position.y;
                 subregion.localization = localization;
                 subregion.left_down = left_down;
                 subregion.right_up = right_up;
+                pos.x +=  map.info.origin.position.x;
+                pos.y +=  map.info.origin.position.y;
                 subregion.pos = pos;
                 if (square.states == OBSTACLE)
                     subregion.status = 1;
@@ -137,7 +140,7 @@ void gen_subregion() {
     subregion_map_pub.publish(subregion_map);
 
     visualization_msgs::Marker marker;
-    marker.header.frame_id = "carto_map1";
+    marker.header.frame_id = "map";
     marker.ns = "SubRegion";
     marker.id = 0;
     marker.type = visualization_msgs::Marker::CUBE_LIST;
@@ -163,8 +166,8 @@ void gen_subregion() {
     color_exploring.a = 0.8;
     for (auto square=squares.begin(); square!=squares.end(); square++) {
         geometry_msgs::Point pos;
-        pos.x = (square->left_down_x + square->right_up_x)/2;
-        pos.y = (square->left_down_y + square->right_up_y)/2;
+        pos.x = (square->left_down_x + square->right_up_x)/2 + map.info.origin.position.x;
+        pos.y = (square->left_down_y + square->right_up_y)/2 + map.info.origin.position.y;
         if (square->states == UNEXPLORED)
             marker.colors.push_back(color_unexplored);
         else if (square->states == OBSTACLE)
@@ -190,7 +193,7 @@ void gen_square() {
                      ceil(-start_y/square_length);
     int num_square = num_width*num_height;
     visualization_msgs::Marker marker;
-    marker.header.frame_id="carto_map1";
+    marker.header.frame_id="map";
     marker.header.stamp = ros::Time::now();
     marker.ns = "grid";
     marker.id = 0;
@@ -211,18 +214,18 @@ void gen_square() {
     double end_x = -start_x + ceil((width*resolution + start_x)/square_length)*square_length;
     double end_y = -start_y + ceil((height*resolution + start_y)/square_length)*square_length;
 
-    start_point.x = end_x;
-    start_point.y = left_y;
-    end_point.x = end_x;
-    end_point.y = end_y;
+    start_point.x = end_x + map.info.origin.position.x;
+    start_point.y = left_y + map.info.origin.position.y;
+    end_point.x = end_x + map.info.origin.position.x;
+    end_point.y = end_y + map.info.origin.position.y;
 
     marker.points.push_back(start_point);
     marker.points.push_back(end_point);
 
-    start_point.x = left_x;
-    start_point.y = end_y;
-    end_point.x = end_x;
-    end_point.y = end_y;
+    start_point.x = left_x + map.info.origin.position.x;
+    start_point.y = end_y + map.info.origin.position.y;
+    end_point.x = end_x + map.info.origin.position.x;
+    end_point.y = end_y + map.info.origin.position.y;
 
     marker.points.push_back(start_point);
     marker.points.push_back(end_point);
@@ -231,20 +234,20 @@ void gen_square() {
     y.clear();
 
     for (double i = -start_x; i < width*resolution; i += square_length) {
-        start_point.x = i;
-        start_point.y = left_y;
-        end_point.x = i;
-        end_point.y = end_y;
+        start_point.x = i + map.info.origin.position.x;
+        start_point.y = left_y + map.info.origin.position.y;
+        end_point.x = i + map.info.origin.position.x;
+        end_point.y = end_y + map.info.origin.position.y;
         marker.points.push_back(start_point);
         marker.points.push_back(end_point);
         x.push_back(i);
     }
     
     for (double i = -start_x; i > -square_length; i -= square_length) {
-        start_point.x = i;
-        start_point.y = left_y;
-        end_point.x = i;
-        end_point.y = end_y;
+        start_point.x = i + map.info.origin.position.x;
+        start_point.y = left_y + map.info.origin.position.y;
+        end_point.x = i + map.info.origin.position.x;
+        end_point.y = end_y + map.info.origin.position.y;
         marker.points.push_back(start_point);
         marker.points.push_back(end_point);
         if (i != -start_x)
@@ -252,20 +255,20 @@ void gen_square() {
     }
 
     for (double i = -start_y; i < height*resolution; i += square_length) {
-        start_point.x = left_x;
-        start_point.y = i;
-        end_point.x = end_x;
-        end_point.y = i;
+        start_point.x = left_x + map.info.origin.position.x;
+        start_point.y = i + map.info.origin.position.y;
+        end_point.x = end_x + map.info.origin.position.x;
+        end_point.y = i + map.info.origin.position.y;
         marker.points.push_back(start_point);
         marker.points.push_back(end_point);
         y.push_back(i);
     }
 
     for (double i = -start_y; i > -square_length; i -= square_length) {
-        start_point.x = left_x;
-        start_point.y = i;
-        end_point.x = end_x;
-        end_point.y = i;
+        start_point.x = left_x + map.info.origin.position.x;
+        start_point.y = i + map.info.origin.position.y;
+        end_point.x = end_x + map.info.origin.position.x;
+        end_point.y = i + map.info.origin.position.y;
         marker.points.push_back(start_point);
         marker.points.push_back(end_point);
         if (i != -start_y)

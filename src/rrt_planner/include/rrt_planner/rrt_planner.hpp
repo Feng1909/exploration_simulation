@@ -1,5 +1,6 @@
 #pragma once
-#include "subregion/subregion_map.h"
+#include "common_msgs/subregion_all.h"
+#include "common_msgs/subregion_single.h"
 #include <nav_msgs/OccupancyGrid.h>
 #include <nav_msgs/Odometry.h>
 #include <geometry_msgs/Point.h>
@@ -22,24 +23,35 @@ float map_width, map_height;
 float stride = 0.5;
 float square_length = 10;
 visualization_msgs::Marker tree_vis;
-subregion::subregion_map subregion_map;
-subregion::subregion subregion_target;
+common_msgs::subregion_all subregion_map;
+common_msgs::subregion_single subregion_target;
 
 std::vector<geometry_msgs::Point> path_points;
 
-void subregion_map_callback(subregion::subregion_map msg) {
+void subregion_map_callback(common_msgs::subregion_all msg) {
   subregion_map = msg;
   for (int i=0; i<subregion_map.subregions.size(); i++) {
-    if (subregion_map.subregions[i].localization.x == 0 && \
-        subregion_map.subregions[i].localization.y == 0) {
+    // if (subregion_map.subregions[i].localization.x == -1 && \
+    //     subregion_map.subregions[i].localization.y == -1) {
+    if (subregion_map.subregions[i].left_down.x < car_state_1.pose.pose.position.x && \
+        subregion_map.subregions[i].right_up.x > car_state_1.pose.pose.position.x && \
+        subregion_map.subregions[i].left_down.y < car_state_1.pose.pose.position.y && \
+        subregion_map.subregions[i].right_up.y > car_state_1.pose.pose.position.y) {
       subregion_target = subregion_map.subregions[i];
       break;
     }
+    // std::cout<<"now: "<<subregion_target.localization.x<<" "<<subregion_target.localization.y<<std::endl;
   }
 }
 
 void car_state_callback_1(nav_msgs::Odometry msg) {
   car_state_1 = msg;
+  if (path_points.size() == 0){
+    geometry_msgs::Point start;
+    start.x = car_state_1.pose.pose.position.x;
+    start.y = car_state_1.pose.pose.position.y;
+    path_points.push_back(start);
+  }
 }
 
 void car_state_callback_2(nav_msgs::Odometry msg) {
@@ -101,8 +113,11 @@ int gridValue(nav_msgs::OccupancyGrid &mapData, geometry_msgs::Point Xp)
   std::vector<signed char> Data=mapData.data;
   // ROS_WARN_THROTTLE(0.5,"Xp[0]: %f; Xp[1]: %f",Xp[0],Xp[1]);
   float indx=(  floor((Xp.y-Xstarty)/resolution)*width)+( floor((Xp.x-Xstartx)/resolution) );
+  // std::cout<<"point: "<<Xp.x<<" "<<Xp.y<<" ";
+  // float indx=(  floor((Xp.y)/resolution)*width)+( floor((Xp.x)/resolution) );
   // ROS_WARN_THROTTLE(0.5,"indx: %f; mapsize:%d",indx,Data.size());
   out=Data[int(indx)];
+  // std::cout<<out<<std::endl;
   return out;
 }
 
@@ -119,7 +134,7 @@ int ObstacleFree(geometry_msgs::Point xnear, geometry_msgs::Point &xnew, nav_msg
   for (int c=0;c<stepz;c++)
   {
     xi=Steer(xi,xnew,rez);
-    if (gridValue(mapsub,xi) >= 50){ obs=1; }
+    if (gridValue(mapsub,xi) >= 40){ obs=1; }
     if (gridValue(mapsub,xi) ==-1){ unk=1;	break;}
   }
   int out=0;
@@ -142,24 +157,32 @@ void rrt_expand() {
   std::uniform_real_distribution<> dis(-0.5, 0.5);
   geometry_msgs::Point x_rand;
   geometry_msgs::Point x_nearest;
+  geometry_msgs::Point x_nearst_next;
   geometry_msgs::Point x_new;
   int num = 0;
   bool flag = false;
   while (true && ros::ok()) {
+    if (path_points.empty())
+      break;
     ros::Time time1 = ros::Time::now();
+    num ++;
     if (flag) break;
-    // std::cout<<"num: "<<num<<std::endl;
     if (num >= 100) break;
     xr = dis(gen) * square_length + subregion_target.pos.x;
     yr = dis(gen) * square_length + subregion_target.pos.y;
-    std::cout<<subregion_target.pos.x<<" "<<subregion_target.pos.y<<" "<<square_length<<" "<<xr<<" "<<yr<<std::endl;
+    // std::cout<<subregion_target.left_down.x <<" "<<subregion_target.left_down.y<<" "<<subregion_target.right_up.x<<" "<<subregion_target.right_up.y<<" "<<square_length<<" "<<xr<<" "<<yr<<std::endl;
     x_rand.x = xr;
     x_rand.y = yr;
     x_nearest = Nearest(path_points,x_rand);
     ros::Time time2 = ros::Time::now();
     x_new = Steer(x_nearest,x_rand,stride);
+    x_nearst_next = Nearest(path_points, x_nearest);
+    if (euclideanDistance(x_new, x_nearest) <= 0.4)
+      continue;
+    // std::cout<<x_new<<std::endl;
     if (x_new.x < subregion_target.left_down.x || x_new.x > subregion_target.right_up.x || \
         x_new.y < subregion_target.left_down.y || x_new.y > subregion_target.right_up.y) {
+      std::cout<<"false"<<std::endl;
       continue;
     }
     ros::Time time3 = ros::Time::now();
@@ -170,19 +193,18 @@ void rrt_expand() {
     // std::cout<<"time2: "<<(time3 - time2).toSec()<<std::endl;
     // std::cout<<"time3: "<<(time4 - time3).toSec()<<std::endl;
     // std::cout<<x_nearest<<std::endl<<x_new<<std::endl;
-    path_points.push_back(x_new);
     geometry_msgs::Point x_new_vis=x_new, x_nearest_vis=x_nearest;
-    x_new_vis.x -= map_origin.x;
-    x_new_vis.y -= map_origin.y;
-    x_nearest_vis.x -= map_origin.x;
-    x_nearest_vis.y -= map_origin.y;
-    tree_vis.points.push_back(x_nearest_vis);
-    tree_vis.points.push_back(x_new_vis);
-    rrt_planner_vis_pub.publish(tree_vis);
+    // x_new_vis.x -= map_origin.x;
+    // x_new_vis.y -= map_origin.y;
+    // x_nearest_vis.x -= map_origin.x;
+    // x_nearest_vis.y -= map_origin.y;
     switch (det_check)
     {
     case 1:
-      num ++;
+      path_points.push_back(x_new);
+      tree_vis.points.push_back(x_nearest_vis);
+      tree_vis.points.push_back(x_new_vis);
+      rrt_planner_vis_pub.publish(tree_vis);
       break;
     
     case -1:
@@ -190,7 +212,6 @@ void rrt_expand() {
       break;
     
     case 0:
-      num ++;
       break;
     
     default:
