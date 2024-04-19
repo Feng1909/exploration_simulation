@@ -1,4 +1,0 @@
-[35m[1mScanning dependencies of target subregion_node[0m
-[ 50%] [32mBuilding CXX object CMakeFiles/subregion_node.dir/src/subregion_node.cpp.o[0m
-[100%] [32m[1mLinking CXX executable /home/feng1909/exploration_simulation/devel/.private/subregion/lib/subregion/subregion_node[0m
-[100%] Built target subregion_node

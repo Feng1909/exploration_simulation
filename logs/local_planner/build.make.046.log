@@ -1,4 +1,0 @@
-[ 25%] [32m[1mLinking CXX executable /home/feng1909/exploration_simulation/devel/.private/local_planner/lib/local_planner/pathFollower[0m
-[ 50%] [32m[1mLinking CXX executable /home/feng1909/exploration_simulation/devel/.private/local_planner/lib/local_planner/localPlanner[0m
-[ 75%] Built target pathFollower
-[100%] Built target localPlanner

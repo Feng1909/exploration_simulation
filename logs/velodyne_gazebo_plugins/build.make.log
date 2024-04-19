@@ -1,4 +1,0 @@
-[ 50%] [32m[1mLinking CXX shared library /home/feng1909/exploration_simulation/devel/.private/velodyne_gazebo_plugins/lib/libgazebo_ros_velodyne_gpu_laser.so[0m
-[ 50%] [32m[1mLinking CXX shared library /home/feng1909/exploration_simulation/devel/.private/velodyne_gazebo_plugins/lib/libgazebo_ros_velodyne_laser.so[0m
-[ 75%] Built target gazebo_ros_velodyne_gpu_laser
-[100%] Built target gazebo_ros_velodyne_laser

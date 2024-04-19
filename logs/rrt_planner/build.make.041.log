@@ -1,4 +1,0 @@
-[35m[1mScanning dependencies of target rrt_planner_node[0m
-[ 50%] [32mBuilding CXX object CMakeFiles/rrt_planner_node.dir/src/rrt_planner.cpp.o[0m
-[100%] [32m[1mLinking CXX executable /home/feng1909/exploration_simulation/devel/.private/rrt_planner/lib/rrt_planner/rrt_planner_node[0m
-[100%] Built target rrt_planner_node
