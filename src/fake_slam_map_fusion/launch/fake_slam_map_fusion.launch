@@ -1,0 +1,3 @@
+<launch>
+    <node pkg="fake_slam_map_fusion" type="fake_slam_map_fusion.py" name="fake_slam_map_fusion" output="screen" />
+</launch>
